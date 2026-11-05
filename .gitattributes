@@ -9,3 +9,4 @@
 /phpunit.xml        export-ignore
 /pint.json          export-ignore
 /CHANGELOG.md       export-ignore
+/testbench.yaml     export-ignore

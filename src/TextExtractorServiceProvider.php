@@ -9,6 +9,8 @@ use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use IntrAgile\TextExtractor\Contracts\Extractor;
+use IntrAgile\TextExtractor\Laravel\Console\DoctorCommand;
+use IntrAgile\TextExtractor\Laravel\Console\ExtractCommand;
 use IntrAgile\TextExtractor\Options;
 use IntrAgile\TextExtractor\TextExtractor;
 use InvalidArgumentException;
@@ -51,6 +53,8 @@ final class TextExtractorServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/text-extractor.php' => $this->app->configPath('text-extractor.php'),
             ], 'text-extractor-config');
+
+            $this->commands([DoctorCommand::class, ExtractCommand::class]);
         }
     }
 
