@@ -24,6 +24,7 @@ final class ServiceProviderTest extends TestCase
         config()->set('text-extractor.limits.max_output_bytes', 1234);
         config()->set('text-extractor.limits.max_image_pixels', 99);
         config()->set('text-extractor.limits.max_html_bytes', 4321);
+        config()->set('text-extractor.limits.max_parse_seconds', 9);
         config()->set('text-extractor.process.timeout', 7);
         config()->set('text-extractor.process.memory_mb', 0);
         config()->set('text-extractor.tools.pdftotext', '/opt/tools/pdftotext');
@@ -35,6 +36,7 @@ final class ServiceProviderTest extends TestCase
         $this->assertSame(1234, $options->maxOutputBytes);
         $this->assertSame(99, $options->maxImagePixels);
         $this->assertSame(4321, $options->maxHtmlBytes);
+        $this->assertSame(9, $options->maxParseSeconds);
         $this->assertSame(7, $options->processTimeout);
         $this->assertSame(0, $options->processMemoryMb);
         $this->assertSame('/opt/tools/pdftotext', $options->pdftotextBinary);

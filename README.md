@@ -107,6 +107,10 @@ public function handle(): void
 }
 ```
 
+Keep the job's `$timeout` above `limits.max_parse_seconds` and `process.timeout`. The parse limit is
+checked between parser steps, so a single long libxml call can overrun it; the job timeout is the
+hard stop.
+
 ## Configuration
 
 ```bash
@@ -122,6 +126,7 @@ php artisan vendor:publish --tag=text-extractor-config
 | `limits.max_archive_entries` | `TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES` | 10 000 |
 | `limits.max_image_pixels` | `TEXT_EXTRACTOR_MAX_IMAGE_PIXELS` | 16 000 000 |
 | `limits.max_html_bytes` | `TEXT_EXTRACTOR_MAX_HTML_BYTES` | 10 MiB |
+| `limits.max_parse_seconds` | `TEXT_EXTRACTOR_MAX_PARSE_SECONDS` | 60 s (parsing done in PHP; over it the result is `Failed` / `parse_timeout`) |
 | `process.timeout` | `TEXT_EXTRACTOR_TIMEOUT` | 60 s |
 | `process.memory_mb` | `TEXT_EXTRACTOR_MEMORY_MB` | 512 (Linux only; `0` disables) |
 | `tools.pdftotext` | `TEXT_EXTRACTOR_PDFTOTEXT` | search the `PATH` |

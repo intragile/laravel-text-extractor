@@ -11,8 +11,9 @@ return [
     |
     | Bounds that keep a single oversized or hostile file from exhausting a
     | worker. Sizes are in bytes. Inputs over max_input_bytes are refused,
-    | output over max_output_bytes is truncated and flagged. An empty or
-    | invalid value falls back to the default.
+    | output over max_output_bytes is truncated and flagged. Parsing done in
+    | PHP that runs longer than max_parse_seconds fails as parse_timeout. An
+    | empty or invalid value falls back to the default.
     |
     */
 
@@ -24,6 +25,7 @@ return [
         'max_archive_entries' => env('TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES', 10000),
         'max_image_pixels' => env('TEXT_EXTRACTOR_MAX_IMAGE_PIXELS', 16000000),
         'max_html_bytes' => env('TEXT_EXTRACTOR_MAX_HTML_BYTES', 10485760),
+        'max_parse_seconds' => env('TEXT_EXTRACTOR_MAX_PARSE_SECONDS', 60),
     ],
 
     /*

@@ -70,6 +70,7 @@ final class TextExtractorServiceProvider extends ServiceProvider
             maxArchiveEntries: self::int($config, 'limits.max_archive_entries', $defaults->maxArchiveEntries),
             maxImagePixels: self::int($config, 'limits.max_image_pixels', $defaults->maxImagePixels),
             maxHtmlBytes: self::int($config, 'limits.max_html_bytes', $defaults->maxHtmlBytes),
+            maxParseSeconds: self::int($config, 'limits.max_parse_seconds', $defaults->maxParseSeconds),
             processTimeout: self::int($config, 'process.timeout', $defaults->processTimeout),
             processMemoryMb: self::int($config, 'process.memory_mb', $defaults->processMemoryMb, 0),
             pdftotextBinary: self::nullableString($config, 'tools.pdftotext'),

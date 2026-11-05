@@ -111,6 +111,10 @@ public function handle(): void
 }
 ```
 
+A job `$timeout` értéke legyen nagyobb a `limits.max_parse_seconds`-nál és a `process.timeout`-nál. A
+feldolgozási limitet a parser a lépések között ellenőrzi, így egyetlen hosszú libxml-hívás túllépheti;
+a kemény megállást a job timeoutja adja.
+
 ## Beállítások
 
 ```bash
@@ -126,6 +130,7 @@ php artisan vendor:publish --tag=text-extractor-config
 | `limits.max_archive_entries` | `TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES` | 10 000 |
 | `limits.max_image_pixels` | `TEXT_EXTRACTOR_MAX_IMAGE_PIXELS` | 16 000 000 |
 | `limits.max_html_bytes` | `TEXT_EXTRACTOR_MAX_HTML_BYTES` | 10 MiB |
+| `limits.max_parse_seconds` | `TEXT_EXTRACTOR_MAX_PARSE_SECONDS` | 60 s (a PHP-ban futó feldolgozás; felette az eredmény `Failed` / `parse_timeout`) |
 | `process.timeout` | `TEXT_EXTRACTOR_TIMEOUT` | 60 s |
 | `process.memory_mb` | `TEXT_EXTRACTOR_MEMORY_MB` | 512 (csak Linuxon; `0` kikapcsolja) |
 | `tools.pdftotext` | `TEXT_EXTRACTOR_PDFTOTEXT` | keresés a `PATH`-ban |
