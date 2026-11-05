@@ -23,6 +23,7 @@ return [
         'max_archive_total_bytes' => env('TEXT_EXTRACTOR_MAX_ARCHIVE_TOTAL_BYTES', 536870912),
         'max_archive_entries' => env('TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES', 10000),
         'max_image_pixels' => env('TEXT_EXTRACTOR_MAX_IMAGE_PIXELS', 16000000),
+        'max_html_bytes' => env('TEXT_EXTRACTOR_MAX_HTML_BYTES', 20971520),
     ],
 
     /*

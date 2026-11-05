@@ -68,11 +68,12 @@ to fit in PHP memory. A missing file or a storage error is reported as `Failed` 
 
 The facade resolves `IntrAgile\TextExtractor\Laravel\LaravelTextExtractor`; inject that class, or
 the core `IntrAgile\TextExtractor\TextExtractor` singleton, wherever you prefer dependency
-injection.
+injection. In tests, mock it with `TextExtractor::shouldReceive('extractFromDisk')`.
 
 ### The result
 
-Every call returns an `IntrAgile\TextExtractor\Result` and never throws for problems with the file.
+Every call returns an `IntrAgile\TextExtractor\Result` and never throws for problems with the file
+or the disk: a directory, a missing object or a failing S3 read is `Failed/unreadable`.
 
 | Status | Meaning | Retry? |
 |---|---|---|
@@ -120,6 +121,7 @@ php artisan vendor:publish --tag=text-extractor-config
 | `limits.max_archive_total_bytes` | `TEXT_EXTRACTOR_MAX_ARCHIVE_TOTAL_BYTES` | 512 MiB |
 | `limits.max_archive_entries` | `TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES` | 10 000 |
 | `limits.max_image_pixels` | `TEXT_EXTRACTOR_MAX_IMAGE_PIXELS` | 16 000 000 |
+| `limits.max_html_bytes` | `TEXT_EXTRACTOR_MAX_HTML_BYTES` | 20 MiB |
 | `process.timeout` | `TEXT_EXTRACTOR_TIMEOUT` | 60 s |
 | `process.memory_mb` | `TEXT_EXTRACTOR_MEMORY_MB` | 512 (Linux only; `0` disables) |
 | `tools.pdftotext` | `TEXT_EXTRACTOR_PDFTOTEXT` | search the `PATH` |
@@ -127,6 +129,8 @@ php artisan vendor:publish --tag=text-extractor-config
 | `ocr.languages` | `TEXT_EXTRACTOR_OCR_LANGUAGES` | `eng` |
 | `fallback_encoding` | `TEXT_EXTRACTOR_FALLBACK_ENCODING` | `Windows-1252` |
 | `extractors` | – | `[]` |
+
+An empty or non-numeric value means the default, so `TEXT_EXTRACTOR_TIMEOUT=` in `.env` is safe.
 
 For Hungarian content, set `TEXT_EXTRACTOR_OCR_LANGUAGES=hun+eng` and
 `TEXT_EXTRACTOR_FALLBACK_ENCODING=Windows-1250`.
@@ -158,8 +162,8 @@ php artisan text-extractor:extract storage/app/sample.pdf
 php artisan text-extractor:extract invoices/0042.pdf --disk=s3 --json
 ```
 
-Shows the status, reason, format and text of one file. The exit status is 0 for `Extracted` and
-`Empty`, 1 otherwise.
+Shows the status, reason, format and text of one file, printed literally. The exit status is 0
+for `Extracted` and `Empty`, 1 for any other result and 2 when no path is given.
 
 ## License
 

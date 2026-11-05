@@ -71,12 +71,13 @@ soha nem kell beférnie a PHP memóriájába. Hiányzó fájl vagy tárhelyhiba 
 `unreadable` okkal, és újrapróbálható.
 
 A facade az `IntrAgile\TextExtractor\Laravel\LaravelTextExtractor` osztályt oldja fel. Dependency
-injectionnel ezt az osztályt vagy a mag `IntrAgile\TextExtractor\TextExtractor` singletonját kérheted.
+injectionnel ezt az osztályt vagy a mag `IntrAgile\TextExtractor\TextExtractor` singletonját kérheted. Tesztben a `TextExtractor::shouldReceive('extractFromDisk')` hívással mockolható.
 
 ### Az eredmény
 
-Minden hívás `IntrAgile\TextExtractor\Result`-ot ad vissza, és a fájllal kapcsolatos hiba miatt soha
-nem dob kivételt.
+Minden hívás `IntrAgile\TextExtractor\Result`-ot ad vissza, és a fájllal vagy a diskkel kapcsolatos
+hiba miatt soha nem dob kivételt: egy könyvtár, egy hiányzó objektum vagy egy sikertelen S3-olvasás
+`Failed/unreadable`.
 
 | Status | Jelentés | Újrapróbálás? |
 |---|---|---|
@@ -124,6 +125,7 @@ php artisan vendor:publish --tag=text-extractor-config
 | `limits.max_archive_total_bytes` | `TEXT_EXTRACTOR_MAX_ARCHIVE_TOTAL_BYTES` | 512 MiB |
 | `limits.max_archive_entries` | `TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES` | 10 000 |
 | `limits.max_image_pixels` | `TEXT_EXTRACTOR_MAX_IMAGE_PIXELS` | 16 000 000 |
+| `limits.max_html_bytes` | `TEXT_EXTRACTOR_MAX_HTML_BYTES` | 20 MiB |
 | `process.timeout` | `TEXT_EXTRACTOR_TIMEOUT` | 60 s |
 | `process.memory_mb` | `TEXT_EXTRACTOR_MEMORY_MB` | 512 (csak Linuxon; `0` kikapcsolja) |
 | `tools.pdftotext` | `TEXT_EXTRACTOR_PDFTOTEXT` | keresés a `PATH`-ban |
@@ -131,6 +133,9 @@ php artisan vendor:publish --tag=text-extractor-config
 | `ocr.languages` | `TEXT_EXTRACTOR_OCR_LANGUAGES` | `eng` |
 | `fallback_encoding` | `TEXT_EXTRACTOR_FALLBACK_ENCODING` | `Windows-1252` |
 | `extractors` | – | `[]` |
+
+Az üres vagy nem szám érték az alapértelmezést jelenti, így a `.env`-ben a `TEXT_EXTRACTOR_TIMEOUT=` sem
+okoz hibát.
 
 Magyar tartalomhoz állítsd be: `TEXT_EXTRACTOR_OCR_LANGUAGES=hun+eng` és
 `TEXT_EXTRACTOR_FALLBACK_ENCODING=Windows-1250`.
@@ -163,8 +168,8 @@ php artisan text-extractor:extract storage/app/minta.pdf
 php artisan text-extractor:extract szamlak/0042.pdf --disk=s3 --json
 ```
 
-Egy fájl státuszát, okát, formátumát és szövegét mutatja. A kilépési kód `Extracted` és `Empty`
-esetén 0, egyébként 1.
+Egy fájl státuszát, okát, formátumát és szövegét mutatja, szó szerint. A kilépési kód `Extracted` és
+`Empty` esetén 0, más eredménynél 1, hiányzó útvonalnál 2.
 
 ## Licenc
 
