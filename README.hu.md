@@ -125,7 +125,7 @@ php artisan vendor:publish --tag=text-extractor-config
 | `limits.max_archive_total_bytes` | `TEXT_EXTRACTOR_MAX_ARCHIVE_TOTAL_BYTES` | 512 MiB |
 | `limits.max_archive_entries` | `TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES` | 10 000 |
 | `limits.max_image_pixels` | `TEXT_EXTRACTOR_MAX_IMAGE_PIXELS` | 16 000 000 |
-| `limits.max_html_bytes` | `TEXT_EXTRACTOR_MAX_HTML_BYTES` | 20 MiB |
+| `limits.max_html_bytes` | `TEXT_EXTRACTOR_MAX_HTML_BYTES` | 10 MiB |
 | `process.timeout` | `TEXT_EXTRACTOR_TIMEOUT` | 60 s |
 | `process.memory_mb` | `TEXT_EXTRACTOR_MEMORY_MB` | 512 (csak Linuxon; `0` kikapcsolja) |
 | `tools.pdftotext` | `TEXT_EXTRACTOR_PDFTOTEXT` | keresés a `PATH`-ban |
