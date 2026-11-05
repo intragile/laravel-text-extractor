@@ -1,0 +1,90 @@
+{
+    "name": "intragile/laravel-text-extractor",
+    "description": "Laravel integration for intragile/php-text-extractor: extract text from PDF, Office, OpenDocument, RTF, HTML, CSV and images on any Storage disk, with a facade, config and a doctor command.",
+    "keywords": [
+        "laravel",
+        "text-extraction",
+        "text-extractor",
+        "extract-text",
+        "pdf-to-text",
+        "docx",
+        "xlsx",
+        "ocr",
+        "tesseract",
+        "storage",
+        "rag",
+        "search-index"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://intragile.eu",
+    "support": {
+        "issues": "https://github.com/intragile/laravel-text-extractor/issues",
+        "source": "https://github.com/intragile/laravel-text-extractor",
+        "security": "https://github.com/intragile/laravel-text-extractor/security/policy"
+    },
+    "authors": [
+        {
+            "name": "IntrAgile Kft.",
+            "email": "info@intragile.eu",
+            "homepage": "https://intragile.eu"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^12.0|^13.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0",
+        "intragile/php-text-extractor": "^1.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.20",
+        "orchestra/testbench": "^10.0|^11.0",
+        "phpunit/phpunit": "^11.5|^12.0"
+    },
+    "conflict": {
+        "illuminate/support": "<12.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../php-text-extractor",
+            "options": {
+                "versions": {
+                    "intragile/php-text-extractor": "1.0.0"
+                }
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "IntrAgile\\TextExtractor\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "IntrAgile\\TextExtractor\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "IntrAgile\\TextExtractor\\Laravel\\TextExtractorServiceProvider"
+            ],
+            "aliases": {
+                "TextExtractor": "IntrAgile\\TextExtractor\\Laravel\\Facades\\TextExtractor"
+            }
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "format": "pint"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
