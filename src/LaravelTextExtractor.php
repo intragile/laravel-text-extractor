@@ -12,8 +12,10 @@ use Throwable;
 
 /**
  * The core extractor plus extraction straight from a Storage disk.
+ *
+ * Not final so the facade can be mocked with shouldReceive() in application tests.
  */
-final class LaravelTextExtractor
+class LaravelTextExtractor
 {
     public function __construct(
         private readonly TextExtractor $core,

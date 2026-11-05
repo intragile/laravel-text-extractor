@@ -88,6 +88,16 @@ final class ServiceProviderTest extends TestCase
         $this->assertSame(resolve(TextExtractor::class), TextExtractorFacade::core());
     }
 
+    public function test_facade_can_be_mocked(): void
+    {
+        TextExtractorFacade::shouldReceive('extractFromDisk')
+            ->once()
+            ->with('a.txt', 's3')
+            ->andReturn(Result::extracted('mocked', Format::Txt));
+
+        $this->assertSame('mocked', TextExtractorFacade::extractFromDisk('a.txt', 's3')->text);
+    }
+
     public function test_bindings_are_singletons(): void
     {
         $this->assertSame(resolve(LaravelTextExtractor::class), resolve(LaravelTextExtractor::class));
