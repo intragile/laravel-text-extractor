@@ -70,7 +70,7 @@ final class TextExtractorServiceProvider extends ServiceProvider
             maxArchiveEntries: self::int($config, 'limits.max_archive_entries', $defaults->maxArchiveEntries),
             maxImagePixels: self::int($config, 'limits.max_image_pixels', $defaults->maxImagePixels),
             processTimeout: self::int($config, 'process.timeout', $defaults->processTimeout),
-            processMemoryMb: self::int($config, 'process.memory_mb', $defaults->processMemoryMb),
+            processMemoryMb: self::int($config, 'process.memory_mb', $defaults->processMemoryMb, 0),
             pdftotextBinary: self::nullableString($config, 'tools.pdftotext'),
             tesseractBinary: self::nullableString($config, 'tools.tesseract'),
             ocrLanguages: self::nullableString($config, 'ocr.languages') ?? $defaults->ocrLanguages,
@@ -78,11 +78,24 @@ final class TextExtractorServiceProvider extends ServiceProvider
         );
     }
 
-    private static function int(Repository $config, string $key, int $default): int
+    /**
+     * Reads an integer setting, falling back to the core default for anything unusable.
+     *
+     * Values usually come straight from env(), so an unset or empty variable arrives as null
+     * or "", and a typo as an arbitrary string. Rejecting those here keeps a bad environment
+     * value from making every resolve of the extractor throw.
+     */
+    private static function int(Repository $config, string $key, int $default, int $minimum = 1): int
     {
         $value = $config->get('text-extractor.'.$key);
 
-        return is_numeric($value) ? (int) $value : $default;
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+
+        return is_int($int) && $int >= $minimum ? $int : $default;
     }
 
     private static function nullableString(Repository $config, string $key): ?string

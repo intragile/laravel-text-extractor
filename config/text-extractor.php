@@ -11,17 +11,18 @@ return [
     |
     | Bounds that keep a single oversized or hostile file from exhausting a
     | worker. Sizes are in bytes. Inputs over max_input_bytes are refused,
-    | output over max_output_bytes is truncated and flagged.
+    | output over max_output_bytes is truncated and flagged. An empty or
+    | invalid value falls back to the default.
     |
     */
 
     'limits' => [
-        'max_input_bytes' => (int) env('TEXT_EXTRACTOR_MAX_INPUT_BYTES', 104857600),
-        'max_output_bytes' => (int) env('TEXT_EXTRACTOR_MAX_OUTPUT_BYTES', 10485760),
-        'max_archive_entry_bytes' => (int) env('TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRY_BYTES', 268435456),
-        'max_archive_total_bytes' => (int) env('TEXT_EXTRACTOR_MAX_ARCHIVE_TOTAL_BYTES', 536870912),
-        'max_archive_entries' => (int) env('TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES', 10000),
-        'max_image_pixels' => (int) env('TEXT_EXTRACTOR_MAX_IMAGE_PIXELS', 16000000),
+        'max_input_bytes' => env('TEXT_EXTRACTOR_MAX_INPUT_BYTES', 104857600),
+        'max_output_bytes' => env('TEXT_EXTRACTOR_MAX_OUTPUT_BYTES', 10485760),
+        'max_archive_entry_bytes' => env('TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRY_BYTES', 268435456),
+        'max_archive_total_bytes' => env('TEXT_EXTRACTOR_MAX_ARCHIVE_TOTAL_BYTES', 536870912),
+        'max_archive_entries' => env('TEXT_EXTRACTOR_MAX_ARCHIVE_ENTRIES', 10000),
+        'max_image_pixels' => env('TEXT_EXTRACTOR_MAX_IMAGE_PIXELS', 16000000),
     ],
 
     /*
@@ -36,8 +37,8 @@ return [
     */
 
     'process' => [
-        'timeout' => (int) env('TEXT_EXTRACTOR_TIMEOUT', 60),
-        'memory_mb' => (int) env('TEXT_EXTRACTOR_MEMORY_MB', 512),
+        'timeout' => env('TEXT_EXTRACTOR_TIMEOUT', 60),
+        'memory_mb' => env('TEXT_EXTRACTOR_MEMORY_MB', 512),
     ],
 
     'tools' => [
