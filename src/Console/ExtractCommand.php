@@ -6,6 +6,8 @@ namespace IntrAgile\TextExtractor\Laravel\Console;
 
 use Illuminate\Console\Command;
 use IntrAgile\TextExtractor\Laravel\LaravelTextExtractor;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Output\OutputInterface;
 
 final class ExtractCommand extends Command
 {
@@ -32,15 +34,17 @@ final class ExtractCommand extends Command
             ? $extractor->extractFromDisk($path, $disk)
             : $extractor->extract($path);
 
+        // Document text and messages are untrusted: written through the formatter, a "<info>"
+        // or "<fg=red>" inside a document would be interpreted as console markup.
         if ($this->option('json') === true) {
-            $this->line((string) json_encode([
+            $this->output->writeln((string) json_encode([
                 'status' => $result->status->value,
                 'reason' => $result->reason?->value,
                 'format' => $result->format?->value,
                 'truncated' => $result->truncated,
                 'message' => $result->message,
                 'text' => $result->text,
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE));
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE), OutputInterface::OUTPUT_RAW);
         } else {
             $this->table(['Status', 'Reason', 'Format', 'Truncated'], [[
                 $result->status->value,
@@ -50,12 +54,12 @@ final class ExtractCommand extends Command
             ]]);
 
             if ($result->message !== null) {
-                $this->line($result->message);
+                $this->line(OutputFormatter::escape($result->message));
             }
 
             if ($result->text !== '') {
                 $this->newLine();
-                $this->line($result->text);
+                $this->line(OutputFormatter::escape($result->text));
             }
         }
 

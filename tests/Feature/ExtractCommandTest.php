@@ -65,4 +65,25 @@ final class ExtractCommandTest extends TestCase
         $this->assertSame(0, Artisan::call('text-extractor:extract', ['path' => 'blank.txt', '--disk' => 'local']));
         $this->assertStringContainsString('empty', Artisan::output());
     }
+
+    public function test_console_tags_in_the_document_are_printed_literally(): void
+    {
+        Storage::fake('local');
+        Storage::disk('local')->put('tags.txt', 'plain <info>green</info> and <fg=red>red</>');
+
+        $this->assertSame(0, Artisan::call('text-extractor:extract', ['path' => 'tags.txt', '--disk' => 'local']));
+        $this->assertStringContainsString('plain <info>green</info> and <fg=red>red</>', Artisan::output());
+    }
+
+    public function test_console_tags_in_the_document_stay_raw_in_json(): void
+    {
+        Storage::fake('local');
+        Storage::disk('local')->put('tags.txt', 'a <info>b</info> \\<c>');
+
+        Artisan::call('text-extractor:extract', ['path' => 'tags.txt', '--disk' => 'local', '--json' => true]);
+        $decoded = json_decode(Artisan::output(), true);
+
+        $this->assertIsArray($decoded);
+        $this->assertSame('a <info>b</info> \\<c>', $decoded['text']);
+    }
 }
