@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace IntrAgile\TextExtractor\Laravel\Tests\Feature;
 
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use IntrAgile\TextExtractor\Format;
 use IntrAgile\TextExtractor\Laravel\Facades\TextExtractor;
 use IntrAgile\TextExtractor\Laravel\Tests\TestCase;
 use IntrAgile\TextExtractor\Reason;
 use IntrAgile\TextExtractor\Status;
+use RuntimeException;
 
 final class DiskExtractionTest extends TestCase
 {
@@ -67,5 +69,66 @@ final class DiskExtractionTest extends TestCase
         Storage::disk('local')->put('big.txt', str_repeat('x', 11));
 
         $this->assertSame(Reason::TooLarge, TextExtractor::extractFromDisk('big.txt', 'local')->reason);
+    }
+
+    public function test_directory_on_disk_is_failed_unreadable(): void
+    {
+        Storage::fake('local');
+        Storage::disk('local')->makeDirectory('dir');
+
+        $result = TextExtractor::extractFromDisk('dir', 'local');
+
+        $this->assertSame(Status::Failed, $result->status);
+        $this->assertSame(Reason::Unreadable, $result->reason);
+    }
+
+    public function test_error_while_reading_the_disk_stream_is_failed_unreadable(): void
+    {
+        stream_wrapper_register('lte-broken', BrokenStream::class);
+
+        try {
+            $disk = \Mockery::mock(Filesystem::class);
+            $disk->shouldReceive('exists')->andReturn(true);
+            $disk->shouldReceive('readStream')->andReturnUsing(static fn () => fopen('lte-broken://file', 'rb'));
+            Storage::set('broken', $disk);
+
+            $result = TextExtractor::extractFromDisk('remote.txt', 'broken');
+        } finally {
+            stream_wrapper_unregister('lte-broken');
+        }
+
+        $this->assertSame(Status::Failed, $result->status);
+        $this->assertSame(Reason::Unreadable, $result->reason);
+        $this->assertTrue($result->isRetryable());
+    }
+}
+
+/**
+ * A stream whose reads fail the way a dropped network connection does.
+ */
+final class BrokenStream
+{
+    /** @var resource|null */
+    public $context;
+
+    public function stream_open(string $path, string $mode, int $options, ?string &$openedPath): bool
+    {
+        return true;
+    }
+
+    public function stream_read(int $count): string
+    {
+        throw new RuntimeException('Connection reset by peer');
+    }
+
+    public function stream_eof(): bool
+    {
+        return false;
+    }
+
+    /** @return array<string, int> */
+    public function stream_stat(): array
+    {
+        return [];
     }
 }

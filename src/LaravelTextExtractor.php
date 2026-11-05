@@ -43,25 +43,35 @@ final class LaravelTextExtractor
      *
      * The file is streamed to a local temporary file rather than loaded with get(), so a large
      * object on S3 never has to fit in PHP memory. Storage errors are reported as a retryable
-     * failure because they say nothing about the file's content.
+     * failure because they say nothing about the file's content. That includes errors raised
+     * while the stream is being read: under Laravel's error handler a read warning from a
+     * network driver becomes an ErrorException, and it must not escape as an exception.
      */
     public function extractFromDisk(string $path, ?string $disk = null): Result
     {
+        $stream = null;
+
         try {
             $filesystem = $this->filesystems->disk($disk);
-            $stream = $filesystem->exists($path) ? $filesystem->readStream($path) : null;
+
+            // exists() is also true for a directory, which cannot be read as a file.
+            $isFile = method_exists($filesystem, 'fileExists')
+                ? (bool) $filesystem->fileExists($path)
+                : $filesystem->exists($path);
+
+            $stream = $isFile ? $filesystem->readStream($path) : null;
+
+            if (! is_resource($stream)) {
+                return Result::failed(Reason::Unreadable, null, sprintf('The file "%s" does not exist or cannot be read.', $path));
+            }
+
+            return $this->core->extractFromStream($stream, basename($path));
         } catch (Throwable $exception) {
             return Result::failed(Reason::Unreadable, null, 'The file cannot be read from the disk: '.$exception->getMessage());
-        }
-
-        if (! is_resource($stream)) {
-            return Result::failed(Reason::Unreadable, null, sprintf('The file "%s" does not exist or cannot be read.', $path));
-        }
-
-        try {
-            return $this->core->extractFromStream($stream, basename($path));
         } finally {
-            fclose($stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
         }
     }
 
