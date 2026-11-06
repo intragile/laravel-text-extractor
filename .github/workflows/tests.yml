@@ -21,7 +21,7 @@ jobs:
           - { php: '8.5', laravel: '13.*' }
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils tesseract-ocr tesseract-ocr-eng
       - uses: shivammathur/setup-php@v2
         with:
