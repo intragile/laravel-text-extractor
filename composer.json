@@ -46,17 +46,6 @@
     "conflict": {
         "illuminate/support": "<12.0"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../php-text-extractor",
-            "options": {
-                "versions": {
-                    "intragile/php-text-extractor": "1.0.0"
-                }
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "IntrAgile\\TextExtractor\\Laravel\\": "src/"
